@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import CryptoTable from "./cryptoTable";
 import { getCryptoData } from "../services/cryptoService.js";
+import _ from "lodash";
 
 class CryptoTracker extends Component {
   state = {
@@ -38,13 +39,14 @@ class CryptoTracker extends Component {
 
   render() {
     const { cryptoData, sortColumn, timeSlots } = this.state;
+    const sorted = _.orderBy(cryptoData, [sortColumn.path], [sortColumn.order]);
     return (
       <div className="row">
         <CryptoTable
-          cryptoData={cryptoData}
+          cryptoData={sorted}
           sortColumn={sortColumn}
           onSort={this.handleSort}
-					timeSlots={timeSlots}
+          timeSlots={timeSlots}
         />
       </div>
     );

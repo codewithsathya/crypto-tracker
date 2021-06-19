@@ -1,7 +1,30 @@
 import http from "./httpService";
 
 const apiUrl = "https://api.binance.com/api/v3";
-const coinsArray = ["BTC", "DOGE", "ETH", "BNB"];
+const coinsArray = [
+  "ADA",
+  "ATOM",
+  "BAT",
+  "BCH",
+  "BNB",
+  "BTC",
+  "DASH",
+  "DOGE",
+  "DOT",
+  "EOS",
+  "ETC",
+  "ETH",
+  "IOST",
+  "IOTA",
+  "LTC",
+  "NEO",
+  "ONT",
+  "QTUM",
+  "TRX",
+  "XMR",
+  "XRP",
+  "ZEC",
+];
 const quote = "USDT";
 
 function getUrl(symbol, startTime, endTime) {
@@ -55,6 +78,4 @@ function getCryptoData(...rest) {
   return Promise.all(finalArray);
 }
 
-export {
-  getCryptoData,
-};
+export { getCryptoData };
