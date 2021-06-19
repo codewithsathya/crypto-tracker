@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import CryptoTable from "./cryptoTable";
-import crypto from "../services/cryptoService.js";
+import { getCryptoData } from "../services/cryptoService.js";
 
 class CryptoTracker extends Component {
   state = {
-    timeSlots: [3, 6],
+    timeSlots: [1, 3, 60],
     cryptoData: [],
     sortColumn: { path: "pair", order: "asc" },
+    temp: 1,
   };
 
   async componentDidMount() {
-    let cryptoData = await crypto.getCryptoData(...this.state.timeSlots);
+    let cryptoData = await getCryptoData(...this.state.timeSlots);
     this.setState({
       cryptoData: this.mapModelToView(cryptoData),
     });
@@ -36,10 +37,15 @@ class CryptoTracker extends Component {
   };
 
   render() {
-    const { cryptoData, sortColumn } = this.state;
+    const { cryptoData, sortColumn, timeSlots } = this.state;
     return (
       <div className="row">
-        <CryptoTable cryptoData={cryptoData} sortColumn={sortColumn} onSort={this.handleSort}/>
+        <CryptoTable
+          cryptoData={cryptoData}
+          sortColumn={sortColumn}
+          onSort={this.handleSort}
+					timeSlots={timeSlots}
+        />
       </div>
     );
   }

@@ -55,6 +55,6 @@ function getCryptoData(...rest) {
   return Promise.all(finalArray);
 }
 
-export default {
+export {
   getCryptoData,
 };
