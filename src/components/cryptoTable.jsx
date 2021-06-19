@@ -1,31 +1,25 @@
 import React, { Component } from "react";
+import Table from "./common/table";
 
 class CryptoTable extends Component {
+  columns = [
+    { path: "pair", label: "Pair" },
+    { path: "presentPrice", label: "Last Price" },
+    { path: "3min %", label: "3min %" },
+    { path: "3min $", label: "3min $" },
+    { path: "6min %", label: "6min %" },
+    { path: "6min $", label: "6min $" },
+  ];
   state = {};
   render() {
+    const { cryptoData, onSort, sortColumn } = this.props;
     return (
-      <div>
-        <div className="row">
-          <div className="col-1">Hello</div>
-          <div className="col">Hello</div>
-        </div>
-				<div className="row">
-					<div className="col-2">Hello</div>
-					<div className="col">Hello</div>
-				</div>
-				<div className="row">
-					<div className="col-3">Hello</div>
-					<div className="col">Hello</div>
-				</div>
-				<div className="row">
-					<div className="col-4">Hello</div>
-					<div className="col">Hello</div>
-				</div>
-				<div className="row">
-					<div className="col-5">Hello</div>
-					<div className="col">Hello</div>
-				</div>
-      </div>
+      <Table
+        data={cryptoData}
+        columns={this.columns}
+        sortColumn={sortColumn}
+        onSort={onSort}
+      />
     );
   }
 }
