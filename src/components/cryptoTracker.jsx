@@ -5,21 +5,38 @@ import _ from "lodash";
 
 class CryptoTracker extends Component {
   state = {
-    timeSlots: [1, 3, 60],
+    timeSlots: [1, 3, 15, 180],
     cryptoData: [],
     sortColumn: { path: "pair", order: "asc" },
-    temp: 1,
+    time: Date.now(),
   };
+  
+  previousCryptoData = null;
+  interval;
 
   async componentDidMount() {
-    let cryptoData = await getCryptoData(...this.state.timeSlots);
+    this.populateCryptoData();
+  }
+
+  populateCryptoData = async () => {
+    let cryptoData = await getCryptoData(
+      this.previousCryptoData,
+      ...this.state.timeSlots
+    );
     this.setState({
       cryptoData: this.mapModelToView(cryptoData),
     });
+    this.previousCryptoData = cryptoData;
+    this.interval = setTimeout(this.populateCryptoData.bind(this), 5000);
+  };
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   mapModelToView = (data) => {
     let mappedData = data.map((coinData, index) => {
+      if (!coinData) return {};
       let obj = {};
       obj._id = index.toString();
       obj.pair = coinData.pair;
