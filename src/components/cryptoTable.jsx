@@ -10,12 +10,12 @@ class CryptoTable extends Component {
   };
 
   componentDidMount() {
-    let { timeSlots } = this.props;
+    let { timeSlotsForPercent, timeSlotsForPrice } = this.props;
     let columns = [...this.state.columns];
-		timeSlots.forEach(i => {
+		timeSlotsForPercent.forEach(i => {
 			columns.push({path: `${i}min %`, label: `${i}min %`})
 		})
-		timeSlots.forEach(i => {
+		timeSlotsForPrice.forEach(i => {
 			columns.push({path: `${i}min $`, label: `${i}min $`})
 		})
     this.setState({ columns });

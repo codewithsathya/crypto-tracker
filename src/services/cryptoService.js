@@ -42,10 +42,10 @@ function getPeakAndDip(previousData, presentData, timeInMin) {
   let maximum = presentData[pastIndex];
   for (let i = pastIndex; i < limit; i++) {
     if (minimum > presentData[i][1]) {
-      minimum = presentData[i][1];
+      minimum = parseFloat(presentData[i][1]);
     }
     if (maximum < presentData[i][1]) {
-      maximum = presentData[i][1];
+      maximum = parseFloat(presentData[i][1]);
     }
   }
   result.minimum = minimum;
@@ -62,7 +62,13 @@ function getPeakAndDip(previousData, presentData, timeInMin) {
   // return {minimum : 0, maximum : 0, peakOrDip : 1}
 }
 
-async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
+async function getDataOfCoin(
+  base,
+  quote,
+  previousCryptoDataOfCoin,
+  timeSlotsForPercent,
+  timeSlotsForPrice
+) {
   const symbol = base + quote;
 
   let presentTime = new Date().getTime();
@@ -81,7 +87,7 @@ async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
   finalData.pair = `${base}/${quote}`;
   finalData.presentPrice = parseFloat(presentPrice.toPrecision(7));
 
-  const differences = rest.map((timeInMin) => {
+  const percentDifferences = timeSlotsForPercent.map((timeInMin) => {
     let pastIndex = limit - 1 - timeInMin;
     let pastOpeningPrice = parseFloat(candles[pastIndex][1]);
     let pastClosingPrice = parseFloat(candles[pastIndex][4]);
@@ -95,25 +101,52 @@ async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
     result.maximum = obj.maximum;
     result.peakOrDip = obj.peakOrDip;
     result.timeDifference = timeInMin;
-    result.priceDifference = parseFloat((presentPrice - pastPrice).toPrecision(4));
 
-    result.percentDifference =
-      parseFloat((((presentPrice - pastPrice) / pastPrice) * 100).toFixed(2));
+    result.percentDifference = parseFloat(
+      (((presentPrice - pastPrice) / pastPrice) * 100).toFixed(2)
+    );
     result.pastPrice = parseFloat(pastPrice.toPrecision(7));
     return result;
   });
 
-  finalData.differences = differences;
+  const priceDifferences = timeSlotsForPrice.map((timeInMin) => {
+    let pastIndex = limit - 1 - timeInMin;
+    let pastOpeningPrice = parseFloat(candles[pastIndex][1]);
+    let pastClosingPrice = parseFloat(candles[pastIndex][4]);
+    let pastPrice =
+      pastOpeningPrice + (pastClosingPrice - pastOpeningPrice) * ratio;
+
+    let obj = getPeakAndDip(previousCryptoDataOfCoin, candles, timeInMin);
+
+    let result = {};
+    result.minimum = obj.minimum;
+    result.maximum = obj.maximum;
+    result.peakOrDip = obj.peakOrDip;
+    result.timeDifference = timeInMin;
+    result.priceDifference = parseFloat(
+      (presentPrice - pastPrice).toPrecision(4)
+    );
+    result.pastPrice = parseFloat(pastPrice.toPrecision(7));
+    return result;
+  });
+
+  finalData.percentDifferences = percentDifferences;
+  finalData.priceDifferences = priceDifferences;
   return finalData;
 }
 
-function getCryptoData(previousCryptoData, ...rest) {
+function getCryptoData(
+  previousCryptoData,
+  timeSlotsForPercent,
+  timeSlotsForPrice
+) {
   let finalArray = coinsArray.map((item, index) =>
     getDataOfCoin(
       item,
       quote,
       previousCryptoData ? previousCryptoData[index] : null,
-      ...rest
+      timeSlotsForPercent,
+      timeSlotsForPrice
     )
   );
   return Promise.all(finalArray);
