@@ -10,7 +10,7 @@ class CryptoTracker extends Component {
     sortColumn: { path: "pair", order: "asc" },
     time: Date.now(),
   };
-  
+
   previousCryptoData = null;
   interval;
 
@@ -56,7 +56,23 @@ class CryptoTracker extends Component {
 
   render() {
     const { cryptoData, sortColumn, timeSlots } = this.state;
-    const sorted = _.orderBy(cryptoData, [sortColumn.path], [sortColumn.order]);
+    let sorted;
+    if (
+      cryptoData.length !== 0 &&
+      typeof cryptoData[0][sortColumn.path] === "number"
+    ) {
+      if (sortColumn.order === "asc") {
+        sorted = cryptoData.sort(
+          (a, b) => b[sortColumn.path] - a[sortColumn.path]
+        );
+      } else {
+        sorted = cryptoData.sort(
+          (a, b) => a[sortColumn.path] - b[sortColumn.path]
+        );
+      }
+    } else {
+      sorted = _.orderBy(cryptoData, [sortColumn.path], [sortColumn.order]);
+    }
     return (
       <div className="row">
         <CryptoTable

@@ -34,6 +34,34 @@ function getUrl(symbol, startTime, endTime) {
   return `${apiUrl}/klines?symbol=${symbol}&interval=1m&startTime=${startTime}&endTime=${endTime}`;
 }
 
+function getPeakAndDip(previousData, presentData, timeInMin) {
+  let pastIndex = limit - 1 - timeInMin;
+  let result = {};
+  // if (!previousData) {
+  let minimum = presentData[pastIndex];
+  let maximum = presentData[pastIndex];
+  for (let i = pastIndex; i < limit; i++) {
+    if (minimum > presentData[i][1]) {
+      minimum = presentData[i][1];
+    }
+    if (maximum < presentData[i][1]) {
+      maximum = presentData[i][1];
+    }
+  }
+  result.minimum = minimum;
+  result.maximum = maximum;
+  if (presentData[limit - 1][4] <= minimum) {
+    result.peakOrDip = -1;
+  } else if (presentData[limit - 1][4] >= maximum) {
+    result.peakOrDip = 1;
+  } else {
+    result.peakOrDip = 0;
+  }
+  return result;
+  // }
+  // return {minimum : 0, maximum : 0, peakOrDip : 1}
+}
+
 async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
   const symbol = base + quote;
 
@@ -51,7 +79,7 @@ async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
 
   let finalData = {};
   finalData.pair = `${base}/${quote}`;
-  finalData.presentPrice = presentPrice.toPrecision(7);
+  finalData.presentPrice = parseFloat(presentPrice.toPrecision(7));
 
   const differences = rest.map((timeInMin) => {
     let pastIndex = limit - 1 - timeInMin;
@@ -60,30 +88,18 @@ async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
     let pastPrice =
       pastOpeningPrice + (pastClosingPrice - pastOpeningPrice) * ratio;
 
-    let minimum = candles[0],
-      maximum = candles[0];
-    for (let i = pastIndex; i < limit; i++) {
-      if (minimum > candles[i][1]) {
-        minimum = candles[i][1];
-      }
-      if (maximum < candles[i][1]) {
-        maximum = candles[i][1];
-      }
-    }
+    let obj = getPeakAndDip(previousCryptoDataOfCoin, candles, timeInMin);
 
     let result = {};
-    result.minimum = minimum;
-    result.maximum = maximum;
+    result.minimum = obj.minimum;
+    result.maximum = obj.maximum;
+    result.peakOrDip = obj.peakOrDip;
     result.timeDifference = timeInMin;
-    result.priceDifference = (presentPrice - pastPrice).toPrecision(4);
+    result.priceDifference = parseFloat((presentPrice - pastPrice).toPrecision(4));
 
-    
-
-    result.percentDifference = parseFloat(
-      ((presentPrice - pastPrice) / pastPrice) * 100
-    ).toFixed(2);
-    result.pastPrice = pastPrice.toPrecision(7);
-    result.peakOrDip = 1;
+    result.percentDifference =
+      parseFloat((((presentPrice - pastPrice) / pastPrice) * 100).toFixed(2));
+    result.pastPrice = parseFloat(pastPrice.toPrecision(7));
     return result;
   });
 
