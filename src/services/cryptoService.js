@@ -62,7 +62,7 @@ async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
 
     let minimum = candles[0],
       maximum = candles[0];
-    for (let i = 1; i < limit; i++) {
+    for (let i = pastIndex; i < limit; i++) {
       if (minimum > candles[i][1]) {
         minimum = candles[i][1];
       }
@@ -70,13 +70,14 @@ async function getDataOfCoin(base, quote, previousCryptoDataOfCoin, ...rest) {
         maximum = candles[i][1];
       }
     }
-    // console.log(timeInMin, minimum, base);
 
     let result = {};
     result.minimum = minimum;
     result.maximum = maximum;
     result.timeDifference = timeInMin;
     result.priceDifference = (presentPrice - pastPrice).toPrecision(4);
+
+    
 
     result.percentDifference = parseFloat(
       ((presentPrice - pastPrice) / pastPrice) * 100
