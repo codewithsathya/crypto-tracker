@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import CryptoTable from "./cryptoTable";
 import { getCryptoData } from "../services/cryptoService.js";
+import mapModelToView from "../utils/mapModelToView";
+import sortData from "../utils/sortData";
 import _ from "lodash";
 import TimeForm from "./timeForm";
 
 class CryptoTracker extends Component {
   state = {
-    timeSlotsForPercent: [1, 3, 15, 60, 180],
+    timeSlotsForPercent: [1, 3, 5, 10, 15, 30, 60, 120, 180],
     timeSlotsForPrice: [],
     cryptoData: [],
     sortColumn: { path: "pair", order: "asc" },
@@ -27,44 +29,45 @@ class CryptoTracker extends Component {
       this.state.timeSlotsForPrice
     );
     this.setState({
-      cryptoData: this.mapModelToView(cryptoData),
+      cryptoData: mapModelToView(cryptoData),
     });
     this.previousCryptoData = cryptoData;
     this.interval = setTimeout(this.populateCryptoData.bind(this), 5000);
-  };
-
-  sortData = (data, sortColumn) => {
-    if (data.length !== 0 && typeof data[0][sortColumn.path] === "number") {
-      if (sortColumn.order === "asc") {
-        return data.sort((a, b) => a[sortColumn.path] - b[sortColumn.path]);
-      } else {
-        return data.sort((a, b) => b[sortColumn.path] - a[sortColumn.path]);
-      }
-    } else {
-      return _.orderBy(data, [sortColumn.path], [sortColumn.order]);
-    }
   };
 
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
-  mapModelToView = (data) => {
-    let mappedData = data.map((coinData, index) => {
-      if (!coinData) return {};
-      let obj = {};
-      obj._id = index.toString();
-      obj.pair = coinData.pair;
-      obj.presentPrice = coinData.presentPrice;
-      coinData.percentDifferences.forEach((item) => {
-        obj[`${item.timeDifference}min %`] = item.percentDifference;
-      });
-      coinData.priceDifferences.forEach((item) => {
-        obj[`${item.timeDifference}min $`] = item.priceDifference;
-      });
-      return obj;
-    });
-    return mappedData;
+  handleAddTime = (time, selectedOption) => {
+    this.addOrDeleteTime(time, selectedOption, "add");
+  };
+
+  handleDeleteTime = (time, selectedOption) => {
+    this.addOrDeleteTime(time, selectedOption, "delete");
+  };
+
+  addOrDeleteTime = (time, selectedOption, addOrDelete) => {
+    let timeSlotsForPercent = [...this.state.timeSlotsForPercent];
+    let timeSlotsForPrice = [...this.state.timeSlotsForPrice];
+    if (addOrDelete === "add")
+      if (selectedOption === "percent") {
+        timeSlotsForPercent.push(time);
+      } else {
+        timeSlotsForPrice.push(time);
+      }
+    else {
+      if (selectedOption === "percent") {
+        timeSlotsForPercent = _.remove(timeSlotsForPercent, (value) => {
+          return value !== time;
+        });
+      } else {
+        timeSlotsForPrice = _.remove(timeSlotsForPrice, (value) => {
+          return value !== time;
+        });
+      }
+    }
+    this.setState({ timeSlotsForPercent, timeSlotsForPrice });
   };
 
   handleSort = (sortColumn) => {
@@ -74,15 +77,17 @@ class CryptoTracker extends Component {
   render() {
     const { cryptoData, sortColumn, timeSlotsForPercent, timeSlotsForPrice } =
       this.state;
-    let sorted = this.sortData(cryptoData, sortColumn);
+    let sorted = sortData(cryptoData, sortColumn);
 
     return (
       <div className="row">
         <div className="row">
-          <div className="col-6 p-3">
+          <div className="col-md-6 col-xs-12 p-3">
             <TimeForm
               timeSlotsForPercent={timeSlotsForPercent}
               timeSlotsForPrice={timeSlotsForPrice}
+              handleAddTime={this.handleAddTime}
+              handleDeleteTime={this.handleDeleteTime}
             />
           </div>
         </div>

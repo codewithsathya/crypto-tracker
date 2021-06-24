@@ -37,7 +37,6 @@ function getUrl(symbol, startTime, endTime) {
 function getPeakAndDip(previousData, presentData, timeInMin) {
   let pastIndex = limit - 1 - timeInMin;
   let result = {};
-  // if (!previousData) {
   let minimum = presentData[pastIndex];
   let maximum = presentData[pastIndex];
   for (let i = pastIndex; i < limit; i++) {
@@ -58,8 +57,10 @@ function getPeakAndDip(previousData, presentData, timeInMin) {
     result.peakOrDip = 0;
   }
   return result;
-  // }
-  // return {minimum : 0, maximum : 0, peakOrDip : 1}
+}
+
+async function getDataFromApi(symbol, startMinute, presentMinute) {
+  return await http.get(getUrl(symbol, startMinute, presentMinute));
 }
 
 async function getDataOfCoin(
@@ -76,9 +77,7 @@ async function getDataOfCoin(
   let startMinute = presentMinute - (limit - 1) * minute;
   let ratio = (presentTime - presentMinute) / minute;
 
-  const { data: candles } = await http.get(
-    getUrl(symbol, startMinute, presentMinute)
-  );
+  const { data: candles } = await getDataFromApi(symbol, startMinute, presentMinute);
 
   if (!candles || !candles[limit - 1]) return previousCryptoDataOfCoin;
   let presentPrice = parseFloat(candles[limit - 1][4]);

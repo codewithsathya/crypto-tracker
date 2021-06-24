@@ -33,10 +33,6 @@ class TimeForm extends Component {
     this.setState({ selectedRadio: input.value });
   };
 
-  handleAdd = () => {};
-
-  handleDelete = () => {};
-
   handleChange = ({ currentTarget: input }) => {
     const errors = { ...this.state.errors };
     let errorMessage = this.validateProperty(input);
@@ -52,33 +48,22 @@ class TimeForm extends Component {
   validateTime = (timeInMin = this.state.data.time) => {
     const { timeSlotsForPercent, timeSlotsForPrice } = this.props;
     const { selectedRadio } = this.state;
-    // console.log(this.props);
-    // console.log(selectedRadio);
-    // console.log(typeof timeInMin);
     let time = parseInt(timeInMin);
-    // console.log(timeSlotsForPercent);
 
     if (selectedRadio === "percent") {
       if (timeSlotsForPercent.includes(time)) {
         return "Already exists";
       } else return null;
-    } else if (selectedRadio === "price") {
+    } else {
       if (timeSlotsForPrice.includes(time)) {
         return "Already exists";
       } else return null;
-    } else {
-      if (
-        timeSlotsForPercent.includes(time) ||
-        timeSlotsForPrice.includes(time)
-      ) {
-        return "Already exists";
-      } else return null;
-    }
+    } 
   };
 
   render() {
     const { data, errors, selectedRadio } = this.state;
-    // console.log(this.state.selectedRadio);
+    const {handleAddTime, handleDeleteTime} = this.props;
     return (
       <div className="flex-container d-flex flex-row flex-wrap justify-content-between align-content-center">
         <div className="flex-item-a">
@@ -108,20 +93,12 @@ class TimeForm extends Component {
             checked={selectedRadio === "price" ? "check" : ""}
           />
         </div>
-        <div className="flex-item-a">
-          <Radio
-            name="selectedRadio"
-            label="Both"
-            value="both"
-            onChange={this.handleRadioChange}
-            checked={selectedRadio === "both" ? "check" : ""}
-          />
-        </div>
 
         <div className="flex-item-c">
           <button
             className="btn btn-primary btn-sm"
             disabled={this.validate() || this.validateTime()}
+            onClick={() => handleAddTime(parseInt(data.time), selectedRadio)}
           >
             Add
           </button>
@@ -130,6 +107,7 @@ class TimeForm extends Component {
           <button
             className="btn btn-danger btn-sm"
             disabled={this.validate() || !this.validateTime()}
+            onClick={() => handleDeleteTime(parseInt(data.time), selectedRadio)}
           >
             Delete
           </button>
