@@ -5,6 +5,7 @@ function mapModelToView(data) {
     obj._id = index.toString();
     obj.pair = coinData.pair;
     obj.presentPrice = coinData.presentPrice;
+    obj["ath %"] = coinData.athDifference;
     coinData.percentDifferences.forEach((item) => {
       obj[`${item.timeDifference}min %`] = item.percentDifference;
     });

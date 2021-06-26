@@ -58,15 +58,15 @@ class TimeForm extends Component {
       if (timeSlotsForPrice.includes(time)) {
         return "Already exists";
       } else return null;
-    } 
+    }
   };
 
   render() {
     const { data, errors, selectedRadio } = this.state;
-    const {handleAddTime, handleDeleteTime} = this.props;
+    const { handleAddTime, handleDeleteTime } = this.props;
     return (
       <div className="flex-container d-flex flex-row flex-wrap justify-content-between align-content-center">
-        <div className="flex-item-a">
+        <div className="flex-item-a m-1">
           <Input
             name="time"
             placeholder="Enter time in min"
@@ -75,42 +75,47 @@ class TimeForm extends Component {
             error={errors["time"]}
           />
         </div>
-        <div className="flex-item-a">
-          <Radio
-            name="selectedRadio"
-            label="Percent"
-            value="percent"
-            onChange={this.handleRadioChange}
-            checked={selectedRadio === "percent" ? "check" : ""}
-          />
+        <div className="flex-container d-flex flex-row flex-wrap justify-content-around align-content-center">
+          <div className="flex-item-a m-1">
+            <Radio
+              name="selectedRadio"
+              label="Percent"
+              value="percent"
+              onChange={this.handleRadioChange}
+              checked={selectedRadio === "percent" ? "check" : ""}
+            />
+          </div>
+          <div className="flex-item-b m-1">
+            <Radio
+              name="selectedRadio"
+              label="Price"
+              value="price"
+              onChange={this.handleRadioChange}
+              checked={selectedRadio === "price" ? "check" : ""}
+            />
+          </div>
         </div>
-        <div className="flex-item-a">
-          <Radio
-            name="selectedRadio"
-            label="Price"
-            value="price"
-            onChange={this.handleRadioChange}
-            checked={selectedRadio === "price" ? "check" : ""}
-          />
-        </div>
-
-        <div className="flex-item-c">
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={this.validate() || this.validateTime()}
-            onClick={() => handleAddTime(parseInt(data.time), selectedRadio)}
-          >
-            Add
-          </button>
-        </div>
-        <div className="flex-item-c">
-          <button
-            className="btn btn-danger btn-sm"
-            disabled={this.validate() || !this.validateTime()}
-            onClick={() => handleDeleteTime(parseInt(data.time), selectedRadio)}
-          >
-            Delete
-          </button>
+        <div className="flex-container d-flex">
+          <div className="flex-item-c">
+            <button
+              className="btn btn-primary btn-sm m-1"
+              disabled={this.validate() || this.validateTime()}
+              onClick={() => handleAddTime(parseInt(data.time), selectedRadio)}
+            >
+              Add
+            </button>
+          </div>
+          <div className="flex-item-c">
+            <button
+              className="btn btn-danger btn-sm m-1"
+              disabled={this.validate() || !this.validateTime()}
+              onClick={() =>
+                handleDeleteTime(parseInt(data.time), selectedRadio)
+              }
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     );

@@ -15,13 +15,6 @@ axios.interceptors.response.use(null, (error) => {
   return Promise.reject(error);
 });
 
-// const toastId = React.useRef(null);
-// const notify = () => {
-//   if (!toast.isActive(toastId.current)) {
-//     toastId.current = toast("An unexpected error occured");
-//   }
-// };
-
 let http = {
   get: axios.get,
   post: axios.post,

@@ -1,6 +1,7 @@
 import http from "./httpService";
 
 const minute = 60000;
+const day = 24 * 60 * minute;
 const limit = 500;
 
 const apiUrl = "https://api.binance.com/api/v3";
@@ -30,8 +31,30 @@ const coinsArray = [
 ];
 const quote = "USDT";
 
-function getUrl(symbol, startTime, endTime) {
-  return `${apiUrl}/klines?symbol=${symbol}&interval=1m&startTime=${startTime}&endTime=${endTime}`;
+let athPrices = {};
+
+async function getAthDifferences(base, quote, presentPrice) {
+
+  if(!athPrices[base]){
+    let symbol = base + quote;
+    let presentTime = new Date().getTime();
+    let presentDay = Math.floor(presentTime / day) * day;
+    let startDay = presentDay - (limit - 1) * day;
+
+    const {data: candles} = await http.get(getUrl(symbol, startDay, presentDay, "1d"))
+    let high = 0;
+    for(let candle of candles){
+      if(parseFloat(candle[2]) > high) {
+        high = parseFloat(candle[2]);
+      }
+    }
+    athPrices[base] = high;
+  }
+  return parseFloat((((presentPrice - athPrices[base]) / athPrices[base]) * 100).toFixed(2));
+}
+
+function getUrl(symbol, startTime, endTime, timeFrame) {
+  return `${apiUrl}/klines?symbol=${symbol}&interval=${timeFrame}&startTime=${startTime}&endTime=${endTime}`;
 }
 
 function getPeakAndDip(previousData, presentData, timeInMin) {
@@ -60,7 +83,7 @@ function getPeakAndDip(previousData, presentData, timeInMin) {
 }
 
 async function getDataFromApi(symbol, startMinute, presentMinute) {
-  return await http.get(getUrl(symbol, startMinute, presentMinute));
+  return await http.get(getUrl(symbol, startMinute, presentMinute, "1m"));
 }
 
 async function getDataOfCoin(
@@ -85,6 +108,7 @@ async function getDataOfCoin(
   let finalData = {};
   finalData.pair = `${base}/${quote}`;
   finalData.presentPrice = parseFloat(presentPrice.toPrecision(7));
+  finalData.athDifference = await getAthDifferences(base, quote, finalData.presentPrice);
 
   const percentDifferences = timeSlotsForPercent.map((timeInMin) => {
     let pastIndex = limit - 1 - timeInMin;

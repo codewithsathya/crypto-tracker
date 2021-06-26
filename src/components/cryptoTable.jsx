@@ -7,6 +7,7 @@ class CryptoTable extends Component {
   defaultColumns = [
     { path: "pair", label: "Pair" },
     { path: "presentPrice", label: "Last Price" },
+    { path: "ath %", label: "ATH %" },
   ];
 
   componentDidUpdate(prevProps) {

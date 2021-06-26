@@ -82,7 +82,7 @@ class CryptoTracker extends Component {
     return (
       <div className="row">
         <div className="row">
-          <div className="col-md-6 col-xs-12 p-3">
+          <div className="col-md-5 col-xs-12 p-3">
             <TimeForm
               timeSlotsForPercent={timeSlotsForPercent}
               timeSlotsForPrice={timeSlotsForPrice}
