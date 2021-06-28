@@ -95,7 +95,7 @@ class TimeForm extends Component {
             />
           </div>
         </div>
-        <div className="flex-container d-flex">
+        <div className="flex-container d-flex flex-row justify-content-center align-items-center">
           <div className="flex-item-c">
             <button
               className="btn btn-primary btn-sm m-1"
