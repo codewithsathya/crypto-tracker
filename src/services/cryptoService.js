@@ -6,51 +6,129 @@ const limit = 500;
 
 const apiUrl = "https://api.binance.com/api/v3";
 const coinsArray = [
-  "ADA",
-  "ATOM",
-  "BAT",
-  "BCH",
-  "BNB",
+  // "ADA",
+  // "ATOM",
+  // "BAT",
+  // "BCH",
+  // "BNB",
+  // "BTC",
+  // "DASH",
+  // "DOGE",
+  // "DOT",
+  // "EOS",
+  // "ETC",
+  // "ETH",
+  // "IOST",
+  // "IOTA",
+  // "LTC",
+  // "NEO",
+  // "ONT",
+  // "QTUM",
+  // "TRX",
+  // "XMR",
+  // "XRP",
+  // "ZEC"
   "BTC",
-  "DASH",
-  "DOGE",
-  "DOT",
-  "EOS",
-  "ETC",
   "ETH",
-  "IOST",
-  "IOTA",
-  "LTC",
-  "NEO",
-  "ONT",
-  "QTUM",
-  "TRX",
-  "XMR",
+  "ADA",
+  "BNB",
   "XRP",
+  "DOGE",
+  "ETC",
+  "MATIC",
+  "SOL",
+  "DOT",
+  "ICP",
+  "VET",
+  "SHIB",
+  "FIL",
+  "LINK",
+  "AAVE",
+  "COMP",
+  "THETA",
+  "LTC",
+  "EOS",
+  "TRX",
+  "RUNE",
+  "AXS",
+  "KSM",
+  "FORTH",
+  "UNI",
+  "BCH",
+  "IOST",
+  "GRT",
+  "ATOM",
+  "CAKE",
+  "SXP",
+  "CHZ",
+  "TFUEL",
+  "CELO",
+  "NEO",
+  "IOTX",
+  "BAKE",
   "ZEC",
+  "XLM",
+  "SLP",
+  "LUNA",
+  "NEAR",
+  "MDX",
+  "FET",
+  "FTM",
+  "ROSE",
+  "XMR",
+  "EGLD",
+  "ONT",
+  "HBAR",
+  "SUSHI",
+  "WIN",
+  "KAVA",
+  "BTT",
+  "ENJ",
+  "ANT",
+  "CRV",
+  "IOTA",
+  "FTT",
+  "DENT",
+  "STMX",
+  "OMG",
+  "DOCK",
+  "WAVES",
+  "QTUM",
+  "MKR",
+  "STRAX",
+  "1INCH",
+  "DASH",
+  "ZIL",
+  "AVAX",
+  "HOT",
+  //
+  "BAT"
 ];
 const quote = "USDT";
 
 let athPrices = {};
 
 async function getAthDifferences(base, quote, presentPrice) {
-
-  if(!athPrices[base]){
+  if (!athPrices[base]) {
     let symbol = base + quote;
     let presentTime = new Date().getTime();
     let presentDay = Math.floor(presentTime / day) * day;
     let startDay = presentDay - (limit - 1) * day;
 
-    const {data: candles} = await http.get(getUrl(symbol, startDay, presentDay, "1d"))
+    const { data: candles } = await http.get(
+      getUrl(symbol, startDay, presentDay, "1d")
+    );
     let high = 0;
-    for(let candle of candles){
-      if(parseFloat(candle[2]) > high) {
+    for (let candle of candles) {
+      if (parseFloat(candle[2]) > high) {
         high = parseFloat(candle[2]);
       }
     }
     athPrices[base] = high;
   }
-  return parseFloat((((presentPrice - athPrices[base]) / athPrices[base]) * 100).toFixed(2));
+  return parseFloat(
+    (((presentPrice - athPrices[base]) / athPrices[base]) * 100).toFixed(2)
+  );
 }
 
 function getUrl(symbol, startTime, endTime, timeFrame) {
@@ -100,7 +178,11 @@ async function getDataOfCoin(
   let startMinute = presentMinute - (limit - 1) * minute;
   let ratio = (presentTime - presentMinute) / minute;
 
-  const { data: candles } = await getDataFromApi(symbol, startMinute, presentMinute);
+  const { data: candles } = await getDataFromApi(
+    symbol,
+    startMinute,
+    presentMinute
+  );
 
   if (!candles || !candles[limit - 1]) return previousCryptoDataOfCoin;
   let presentPrice = parseFloat(candles[limit - 1][4]);
@@ -108,7 +190,11 @@ async function getDataOfCoin(
   let finalData = {};
   finalData.pair = `${base}/${quote}`;
   finalData.presentPrice = parseFloat(presentPrice.toPrecision(7));
-  finalData.athDifference = await getAthDifferences(base, quote, finalData.presentPrice);
+  finalData.athDifference = await getAthDifferences(
+    base,
+    quote,
+    finalData.presentPrice
+  );
 
   const percentDifferences = timeSlotsForPercent.map((timeInMin) => {
     let pastIndex = limit - 1 - timeInMin;

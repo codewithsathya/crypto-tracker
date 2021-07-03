@@ -8,7 +8,7 @@ import TimeForm from "./timeForm";
 
 class CryptoTracker extends Component {
   state = {
-    timeSlotsForPercent: [1, 3, 5, 10, 15, 30, 60, 120, 180],
+    timeSlotsForPercent: [],
     timeSlotsForPrice: [],
     cryptoData: [],
     sortColumn: { path: "pair", order: "asc" },
@@ -17,8 +17,47 @@ class CryptoTracker extends Component {
 
   previousCryptoData = null;
   interval;
+  defaultTimeSlotsForPercent = null;
+  defaultTimeSlotsForPrice = null;
+
+  constructor() {
+    super();
+    this.defaultTimeSlotsForPercent = [1, 3, 5, 10, 15, 30, 60, 120, 180];
+    this.defaultTimeSlotsForPrice = [];
+    this.state.timeSlotsForPercent =
+      JSON.parse(localStorage.getItem("timeSlotsForPercent")) ||
+      this.defaultTimeSlotsForPercent;
+    this.state.timeSlotsForPrice =
+      JSON.parse(localStorage.getItem("timeSlotsForPrice")) ||
+      this.defaultTimeSlotsForPrice;
+  }
 
   async componentDidMount() {
+    let timeSlotsForPercent = JSON.parse(
+      localStorage.getItem("timeSlotsForPercent")
+    );
+
+    if (!timeSlotsForPercent) {
+      timeSlotsForPercent = this.defaultTimeSlotsForPercent;
+      localStorage.setItem(
+        "timeSlotsForPercent",
+        JSON.stringify(timeSlotsForPercent)
+      );
+    }
+
+    let timeSlotsForPrice = JSON.parse(
+      localStorage.getItem("timeSlotsForPrice")
+    );
+
+    if (!timeSlotsForPrice) {
+      timeSlotsForPrice = this.defaultTimeSlotsForPrice;
+      localStorage.setItem(
+        "timeSlotsForPrice",
+        JSON.stringify(timeSlotsForPrice)
+      );
+    }
+
+    console.log("Hello");
     this.populateCryptoData();
   }
 
@@ -67,6 +106,14 @@ class CryptoTracker extends Component {
         });
       }
     }
+    localStorage.setItem(
+      "timeSlotsForPercent",
+      JSON.stringify(timeSlotsForPercent)
+    );
+    localStorage.setItem(
+      "timeSlotsForPrice",
+      JSON.stringify(timeSlotsForPrice)
+    );
     this.setState({ timeSlotsForPercent, timeSlotsForPrice });
   };
 
