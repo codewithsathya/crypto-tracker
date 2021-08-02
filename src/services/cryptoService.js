@@ -188,7 +188,8 @@ async function getDataOfCoin(
   let presentPrice = parseFloat(candles[limit - 1][4]);
 
   let finalData = {};
-  finalData.pair = `${base}/${quote}`;
+  finalData.base = `${base}`;
+  finalData.quote = `${quote}`;
   finalData.presentPrice = parseFloat(presentPrice.toPrecision(7));
   finalData.athDifference = await getAthDifferences(
     base,

@@ -12,4 +12,6 @@ const sortData = (data, sortColumn) => {
   }
 };
 
+
+
 export default sortData;

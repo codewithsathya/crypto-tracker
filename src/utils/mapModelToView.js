@@ -3,7 +3,8 @@ function mapModelToView(data) {
     if (!coinData) return {};
     let obj = {};
     obj._id = index.toString();
-    obj.pair = coinData.pair;
+    obj.pair = <p><b>{coinData.base}</b>/{coinData.quote}</p>
+    // console.log(obj.pair);
     obj.presentPrice = coinData.presentPrice;
     obj["ath %"] = coinData.athDifference;
     coinData.percentDifferences.forEach((item) => {
