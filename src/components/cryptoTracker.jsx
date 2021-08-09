@@ -71,7 +71,7 @@ class CryptoTracker extends Component {
       cryptoData: mapModelToView(cryptoData),
     });
     this.previousCryptoData = cryptoData;
-    this.interval = setTimeout(this.populateCryptoData.bind(this), 5000);
+    this.interval = setTimeout(this.populateCryptoData.bind(this), 15000);
   };
 
   componentWillUnmount() {

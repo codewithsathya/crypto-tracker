@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
-import CryptoTracker from './components/cryptoTracker';
+import Main from './components/main';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -9,7 +9,7 @@ function App() {
     <React.Fragment>
       <ToastContainer />
       <main className="container">
-        <CryptoTracker />
+        <Main />
       </main>
     </React.Fragment>
   );
