@@ -54,31 +54,76 @@ async function getTradableCoins() {
   return coinsData;
 }
 
-async function loadCryptoCandles(coins, quote) {
+async function loadCryptoCandles(coins, quote, timeFrame) {
   let timeNow = new Date().getTime();
-  let cryptoData = {};
-  for(coin of coins){
-    let coinData = { "1m": []};
-    for(let timeFrame of Object.keys(coinData)){
-      console.time("start1");
-      coinData[timeFrame] = await getLatestCandles(coin + quote, timeFrame, 1000)
-      console.timeEnd("start1")
-    };
-    cryptoData[coin] = coinData;
-  };
-  return cryptoData;
+  let cryptoData = coins.map((coin) => {
+    let coinData = getLatestCandles(coin + quote, timeFrame, 1000);
+    return coinData;
+  });
+  return Promise.all(cryptoData);
+}
+
+function convertArrayToObject(keys, values) {
+  let obj = {}
+  for(let i = 0; i < keys.length; i++){
+    obj[keys[i]] = values[i];
+    // console.log(obj);
+  }
+  return obj;
 }
 // getTradableCoins();
 
-async function show(){
+async function show(quote) {
   console.time("start");
   let tradableCoins = await getTradableCoins();
   // console.log(tradableCoins);
-  let data = await loadCryptoCandles(["BNB", "BTC"], "USDT");
+  let data = await loadCryptoCandles(tradableCoins[quote], quote, "1m");
+  let candles = convertArrayToObject(tradableCoins[quote], data);
+  // console.log(candles);
   console.timeEnd("start");
-  console.log(data)
+  console.log(memorySizeOf(candles))
 }
 
-show();
+show("USDT");
+
+
+function memorySizeOf(obj) {
+    var bytes = 0;
+
+    function sizeOf(obj) {
+        if(obj !== null && obj !== undefined) {
+            switch(typeof obj) {
+            case 'number':
+                bytes += 8;
+                break;
+            case 'string':
+                bytes += obj.length * 2;
+                break;
+            case 'boolean':
+                bytes += 4;
+                break;
+            case 'object':
+                var objClass = Object.prototype.toString.call(obj).slice(8, -1);
+                if(objClass === 'Object' || objClass === 'Array') {
+                    for(var key in obj) {
+                        if(!obj.hasOwnProperty(key)) continue;
+                        sizeOf(obj[key]);
+                    }
+                } else bytes += obj.toString().length * 2;
+                break;
+            }
+        }
+        return bytes;
+    };
+
+    function formatByteSize(bytes) {
+        if(bytes < 1024) return bytes + " bytes";
+        else if(bytes < 1048576) return(bytes / 1024).toFixed(3) + " KiB";
+        else if(bytes < 1073741824) return(bytes / 1048576).toFixed(3) + " MiB";
+        else return(bytes / 1073741824).toFixed(3) + " GiB";
+    };
+
+    return formatByteSize(sizeOf(obj));
+};
 
 // export default getTradableCoins;
