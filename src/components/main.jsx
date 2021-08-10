@@ -14,8 +14,7 @@ class Main extends Component {
   }
 
   async componentDidMount() {
-    let tradablePairs = await getTradableCoins();
-    let candles = await loadCandles(tradablePairs[this.state.defaultQuote]);
+    let tradablePairs = await getTradableCoins(["BTC", "BNB", "ETH", "DOT", "ATOM"]);
     this.setState({ tradablePairs });
   }
 
