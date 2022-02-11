@@ -25,8 +25,8 @@ class CryptoTracker extends Component {
     this.defaultTimeSlotsForPercent = [1, 3, 5, 10, 15, 30, 60, 120, 180];
     this.defaultTimeSlotsForPrice = [];
     this.state.timeSlotsForPercent =
-      JSON.parse(localStorage.getItem("timeSlotsForPercent")) ||
-      this.defaultTimeSlotsForPercent;
+      (JSON.parse(localStorage.getItem("timeSlotsForPercent")) ||
+      this.defaultTimeSlotsForPercent).sort((a, b) => a - b);
     this.state.timeSlotsForPrice =
       JSON.parse(localStorage.getItem("timeSlotsForPrice")) ||
       this.defaultTimeSlotsForPrice;
@@ -57,7 +57,6 @@ class CryptoTracker extends Component {
       );
     }
 
-    console.log("Hello");
     this.populateCryptoData();
   }
 
@@ -92,8 +91,10 @@ class CryptoTracker extends Component {
     if (addOrDelete === "add")
       if (selectedOption === "percent") {
         timeSlotsForPercent.push(time);
+        timeSlotsForPercent.sort((a, b) => a - b);
       } else {
         timeSlotsForPrice.push(time);
+        timeSlotsForPrice.sort((a, b) => a - b);
       }
     else {
       if (selectedOption === "percent") {

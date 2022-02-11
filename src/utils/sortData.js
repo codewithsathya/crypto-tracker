@@ -2,6 +2,12 @@ import _ from 'lodash';
 
 const sortData = (data, sortColumn) => {
   if(sortColumn.path === "pair"){
+    console.log(data);
+    for(let i = 0; i < data.length; i++){
+      if(data[i].pair === undefined){
+        delete data[i];
+      }
+    }
     return data.sort((a, b) => {
       let pairA = a.pair.props.children[0].props.children + a.pair.props.children[2];
       let pairB = b.pair.props.children[0].props.children + b.pair.props.children[2];
